@@ -6,7 +6,6 @@
 from lichess_api import client
 from game import start_game
 
-
 ###
 # MAIN LOGIC
 ###
@@ -14,15 +13,16 @@ from game import start_game
 # searching 
 print("Searching for incoming games...")
 
-# setup loop to accept incoming events using the api
-# starting a game on lichess triggers a gameStart event, and this is used to start the game loop
+# setup permanent loop to accept incoming events using the api
+# starting a game on lichess triggers a gameStart event, and this is used to start the game loop with start_game()
 for event in client.board.stream_incoming_events():
-    print(f"Received event: {event}")
 
-    # check if game even is start (run start_game) or finish
     if event['type'] == 'gameStart':
+
+        # set game id from event and start game loop with start_game function
         game_id = event['game']['id']
-        start_game(game_id)
+        print(f"Game starting: {game_id}")
+        start_game(client, game_id)
 
     # if game finishes print to cli and wait for next game 
     elif event['type'] == 'gameFinish':
