@@ -16,7 +16,7 @@ def start_game(client, game_id):
             moves = event['moves']
             if moves:
                 latest_move = moves.split()[-1]
-                print(f"Latest move: {latest_move}")
+                print(f"MOVE: {latest_move}")
 
 
 ###

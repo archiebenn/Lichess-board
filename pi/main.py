@@ -26,12 +26,27 @@ for event in client.board.stream_incoming_events():
 
     # if game finishes print to cli and wait for next game 
     elif event['type'] == 'gameFinish':
+
+        # get some info about the game to print to CLI:
         game = event['game']
         winner = game.get('winner', 'draw')
         opponent = game['opponent']['username']
         last_move = game['lastMove']
+        status = game['status']
+
+        # print info about game outcome to CLI:
         print()
-        print(f"Game over! {winner} wins!")
-        print(f"Final move: {last_move}")
+        if status == 'mate':
+            print(f"Game over - {winner} wins by checkmate!")
+        elif status == 'resign':
+            print(f"Game over - {winner} wins by resignation!")
+        elif status == 'stalemate':
+            print("Game over - stalemate! It's a draw.")
+        elif status == 'outoftime':
+            print(f"Game over - {winner} wins on time!")
+        else:
+            print(f"Game over - {status}")
         print()
+
+        # back to permanent loop...
         print("Start another game to continue playing. Searching for incoming games...")
