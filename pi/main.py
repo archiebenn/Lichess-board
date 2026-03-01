@@ -27,12 +27,12 @@ for event in client.board.stream_incoming_events():
     # if game finishes print to cli and wait for next game 
     elif event['type'] == 'gameFinish':
 
-        # get some info about the game to print to CLI:
+        # get some info about the game from event to print to CLI:
         game = event['game']
         winner = game.get('winner', 'draw')
         opponent = game['opponent']['username']
         last_move = game['lastMove']
-        status = game['status']
+        status = game['status']['name']
 
         # print info about game outcome to CLI:
         print()
