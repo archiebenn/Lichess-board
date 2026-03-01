@@ -1,27 +1,5 @@
 # in game functions
 
-###
-# start_game function
-###
-# set up start game function that streams game state for a given game id and client
-# any move made in the game will trigger an update to the game state, which is streamed in real time and can be used to update the board/cli/LEDs (eventually)
-def start_game(client, game_id):
-    """
-    streams game state for a given game id and updates LEDs accordingly
-    """
-
-    for event in client.board.stream_game_state(game_id):
-
-        # UPDATE THIS BLOCK FOR LEDs
-        if event['type'] == 'gameState':
-
-            # print only latest move from streamed game state:
-            moves = event['moves']
-            if moves:
-                latest_move = moves.split()[-1]
-                print(f"MOVE: {latest_move}")
-
-
 
 ###
 # to_from function
@@ -62,17 +40,48 @@ def opponents_turn(moves, my_colour):
     # BOOL True/False
     whites_turn = move_count %2 == 0
 
-    if my_colour == `white`:
-
+    if my_colour == 'white':
         # evaluates to False (ie opponents turn = false, so my turn if white)
         return not whites_turn
     
     else:
-
-        # evaluates to True (oppponent's turn if they are white)
+        # evaluates to True (oppponent's turn true if they are white)
         return whites_turn
     
 
+###
+# start_game function
+###
+# set up start game function that streams game state for a given game id and client
+# any move made in the game will trigger an update to the game state, which is streamed in real time and can be used to update the board/cli/LEDs (eventually)
+def start_game(client, game_id, my_colour):
+    """
+    streams game state for a given game id and updates LEDs accordingly
+    """
+
+    for event in client.board.stream_game_state(game_id):
+
+        # UPDATE THIS BLOCK FOR LEDs
+        if event['type'] == 'gameState':
+
+            # print only latest move from streamed game state:
+            moves = event['moves']
+            if moves:
+
+                # latest move string
+                latest_move = moves.split()[-1]
+                
+                # set origin/destination:
+                origin, destination, promotion = to_from(latest_move)
+
+                # determine if mine, or opponent's move:
+                if opponents_turn(moves, my_colour):
+
+                    print(f"OPPONENT'S MOVE: {origin} -> {destination}")
+                
+                else:
+                    # my turn
+                    print(f"YOUR MOVE: {origin} -> {destination}")
 
 
 ###

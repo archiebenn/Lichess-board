@@ -19,8 +19,10 @@ for event in client.board.stream_incoming_events():
 
     if event['type'] == 'gameStart':
 
-        # set game id from event and start game loop with start_game function
+        # set game id and my colour from event and start game loop with start_game function
         game_id = event['game']['id']
+        my_colour = event['game']['color']
+
         print(f"Game starting: {game_id}")
         start_game(client, game_id)
 
