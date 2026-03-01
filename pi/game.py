@@ -28,7 +28,7 @@ def to_from(move_string):
 # whose_turn function - returns which player's turn it is based on game state
 ###
 
-def is_opponents_turn(moves, my_colour):
+def is_my_turn(moves, my_colour):
     """
     BOOL True/False to determine if it is the opponent's turn or not based on move count and colour of each player. This is for the NEXT move.
     e.g:
@@ -38,6 +38,7 @@ def is_opponents_turn(moves, my_colour):
 
     # set move count
     move_count = len(moves.split()) if moves else 0
+    print(move_count)
 
     # white always moves first, so it is white's turn next if move_count divisible by 2
     # BOOL True/False
@@ -45,11 +46,11 @@ def is_opponents_turn(moves, my_colour):
 
     if my_colour == 'white':
         # opponent's turn next = false when white's turn next = true and I am white
-        return not whites_turn_next
+        return whites_turn_next
     
     else:
         # opponent's turn next = true when white's turn next = true and I am not white
-        return whites_turn_next
+        return not whites_turn_next
     
 
 ###
@@ -77,14 +78,14 @@ def start_game(client, game_id, my_colour):
                 # set origin/destination:
                 origin, destination, promotion = to_from(latest_move)
 
-                # determine if mine, or opponent's move:
-                if opponents_turn(moves, my_colour):
+                # my turn
+                if is_my_turn(moves, my_colour):
 
-                    print(f"OPPONENT'S MOVE: {origin} -> {destination}")
+                    print(f"YOUR MOVE: {origin} -> {destination}")
                 
                 else:
-                    # my turn
-                    print(f"YOUR MOVE: {origin} -> {destination}")
+                    # opponent's turn
+                    print(f"OPPONENT'S MOVE: {origin} -> {destination}")
 
 
 ###
