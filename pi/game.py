@@ -85,7 +85,7 @@ def start_game(client, game_id, my_colour):
                 
                 else:
                     # print my previous move to CLI during opponent's move
-                    print(f"YOU MOVE: {origin} -> {destination}")
+                    print(f"YOUR MOVE: {origin} -> {destination}")
 
 
 ###
