@@ -3,7 +3,7 @@ Repo for code, set up, and building of an Lichess-linked and LED-activated physi
 
 ## Design approach (unfinished)  
 The idea is to have a classic looking wooden board with discreet LEDs allowing the user to play against a chess computer (through Lichess or a local engine) or online with Lichess. This is the (rough) proposed setup:  
-- Wooden chess set
+- Wooden chess set which will be adapted/drilled to fit the PCB and allow clear LED instructions  
 - Raspberry pi zero 2 W with python scripts (for Lichess API game access) and to run the local engine
 - Arduino connected to the rasbpi for controlling the LEDs 
 - Printed circuit board with 64 soldered hall effect sensors and LEDs (one per square)
