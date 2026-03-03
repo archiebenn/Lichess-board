@@ -9,6 +9,13 @@ import threading
 import time
 
 ###
+# SETUP
+###
+# timer setup
+_stop_clock = threading.Event()
+_clock_thread = None
+
+###
 # to_from function
 ###
 # take the move string, eg e2e4, and return the origin and destination square names (will change to coordinates later)
@@ -66,9 +73,6 @@ def timer(time_ms, player_label):
     """
     converts ms to seconds and formats for display
     """
-    # define globally - quick fix
-    global _stop_clock
-
     _stop_clock.clear()
     remaining_secs = time_ms/1000
 
