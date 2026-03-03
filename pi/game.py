@@ -74,7 +74,12 @@ def timer(time_ms, player_label):
     converts ms to seconds and formats for display
     """
     _stop_clock.clear()
-    remaining_secs = time_ms/1000
+    
+    # convert timedelta to seconds if needed
+    if hasattr(time_ms, 'total_seconds'):
+        remaining_secs = time_ms.total_seconds()
+    else:
+        remaining_secs = time_ms / 1000
 
     # calculate only when time on clock
     while not _stop_clock.is_set() and remaining_secs > 0:
