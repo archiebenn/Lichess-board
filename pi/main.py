@@ -4,7 +4,7 @@
 # IMPORTS
 ###
 from lichess_api import client
-from game import start_game
+from game import game_loop
 
 ###
 # MAIN LOGIC
@@ -26,7 +26,7 @@ for event in client.board.stream_incoming_events():
         print(f"Game starting: {game_id}")
 
         # move to main game loop function - LEDs, moves, timer etc.
-        start_game(client, game_id, my_colour)
+        game_loop(client, game_id, my_colour)
 
     # if game finishes print to cli and wait for next game 
     elif event['type'] == 'gameFinish':
