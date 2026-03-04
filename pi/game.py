@@ -5,6 +5,7 @@
 ###
 import chess
 from serial_comms import LED_instruction
+from move_input import MoveInputHandler
 import threading
 import time
 
@@ -188,6 +189,9 @@ def game_loop(client, game_id, my_colour):
     _clock_thread = None
     _stop_clock = None
 
+    # move input handler
+    move_handler = MoveInputHandler()
+
     # set statuses indicating if a game has already finished to avoid attempting to process moves during a finished game
     finished_status = {
         "resign",
@@ -209,6 +213,9 @@ def game_loop(client, game_id, my_colour):
                 if _clock_thread and _clock_thread.is_alive():
                     _stop_clock.set()
                     _clock_thread.join()
+
+                # stop move input listener
+                move_handler.stop()
 
                 # return to main.py to wait for next game
                 return
@@ -246,6 +253,28 @@ def game_loop(client, game_id, my_colour):
                 time_ms, player_label = handle_turn(
                     moves, my_colour, origin, destination, white_time, black_time
                 )
+
+                # check if my turn and listen to input moves (from hall sensor/CLI)
+                if is_my_turn(moves, my_colour):
+                    # STOP TIMER before asking for input
+                    if _clock_thread and _clock_thread.is_alive():
+                        _stop_clock.set()
+                        _clock_thread.join()
+
+                    move_handler.start_cli_input()
+
+                    # wait for move with no timeout (until game finishes) for typing in move on CLI
+                    my_move = move_handler.get_move(timeout=None)
+                    if my_move:
+                        try:
+                            # make move and send back to lichess
+                            client.board.make_move(game_id, my_move)
+
+                        except Exception as e:
+                            print(f"Invalid move: {e}")
+
+                else:
+                    move_handler.stop()
 
                 # TIMER STUFF
                 _clock_thread, _stop_clock = start_stop_timer(

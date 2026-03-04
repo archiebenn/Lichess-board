@@ -6,6 +6,7 @@
 from lichess_api import client
 from game import game_loop
 
+
 ###
 # MAIN LOGIC
 ###
