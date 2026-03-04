@@ -8,6 +8,7 @@ from serial_comms import LED_instruction
 from move_input import MoveInputHandler
 import threading
 import time
+import queue
 
 ###
 # SETUP
@@ -203,9 +204,17 @@ def game_loop(client, game_id, my_colour):
         "outoftime",
     }
 
+    event_queue = queue.Queue()
+
+    def stream_to_queue():
+        for event in client.board.stream_game_state(game_id):
+            event_queue.put(event)
+
+    threading.Thread(target=stream_to_queue, daemon=True).start()
+
     # this is the main game loop which streams each move in real time and updates LEDs accordingly
     # continues until game finishes, then returns to main.py for next game
-    for event in client.board.stream_game_state(game_id):
+    for event in iter(event_queue.get, None):
         if event["type"] == "gameState":
             # check if game has finished first before attemtping to process moves
             if event["status"] in finished_status:
@@ -261,20 +270,43 @@ def game_loop(client, game_id, my_colour):
                         _stop_clock.set()
                         _clock_thread.join()
 
+                    # clear input queue and ask for input on CLI
+                    move_handler.clear_queue()
                     move_handler.start_cli_input()
+                    print("Enter move (e.g e2e4 format): ", end="", flush=True)
 
-                    # wait for move with no timeout (until game finishes) for typing in move on CLI
-                    my_move = move_handler.get_move(timeout=None)
-                    if my_move:
+                    # loop until a valid move is accepted
+                    while True:
+
+                        # 1 second break to check if game state has moved on or not ie. resign etc.
+                        my_move = move_handler.get_move(timeout=1)
+
+                        # no move yet - check if game state has moved on e.g new game etc.
+                        if my_move is None:
+                            # Check if a new game event arrived (resign, timeout, etc.)
+                            try:
+                                new_event = event_queue.get_nowait()
+                                event_queue.put(new_event)  # put it back for the outer loop to handle
+                                break  # exit input loop, outer loop will process it
+                            except queue.Empty:
+                                continue  # still our turn, keep waiting
+
                         try:
-                            # make move and send back to lichess
                             client.board.make_move(game_id, my_move)
 
+                            # move accepted, stop the timer and exit loop
+                            if _clock_thread and _clock_thread.is_alive():
+                                _stop_clock.set()
+                                _clock_thread.join()
+
+                            break  
+
                         except Exception as e:
-                            print(f"Invalid move: {e}")
+                            print(f"Invalid move: {e}. Please try again.")
+                            # continue loop
 
                 else:
-                    move_handler.stop()
+                    pass
 
                 # TIMER STUFF
                 _clock_thread, _stop_clock = start_stop_timer(
