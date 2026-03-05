@@ -10,15 +10,7 @@ import threading
 import time
 import queue
 
-###
-# SETUP
-###
-# timer setup
-_stop_clock = threading.Event()
-_clock_thread = None
 
-
-###
 # to_from function
 ###
 # take the move string, eg e2e4, and return the origin and destination square names (will change to coordinates later)
@@ -96,7 +88,7 @@ def handle_turn(moves, my_colour, origin, destination, white_time, black_time):
     """
     # my turn - light LEDs and set timer counting down
     if is_my_turn(moves, my_colour):
-        # light up LEDs to show previous (opponent's) move
+        # light up LEDs to show PREVIOUS (opponent's) move
         LED_instruction(origin, destination)
 
         # set variables to pass to timer() for my turn time remaining
@@ -104,7 +96,7 @@ def handle_turn(moves, my_colour, origin, destination, white_time, black_time):
         player_label = "Your time remaining"
 
     else:
-        # show previous move
+        # type out my previous move
         print(f"(Your move) {origin} -> {destination}")
 
         # set variables to pass to timer() for opponent's time remaining
@@ -268,7 +260,7 @@ def game_loop(client, game_id, my_colour):
 
     for event in iter(event_queue.get, None):
 
-        reconnection_attempts = 0
+        reconnection_attempts = 1
 
         # is stream drops, wait 5 seconds and try connecting again
         if event["type"] == "streamDead":
@@ -276,12 +268,13 @@ def game_loop(client, game_id, my_colour):
             if game_over:
                 return
             # set a cap to reconnection attempts before returning to main.py
-            if reconnection_attempts > 5:
+            if reconnection_attempts >= 6:
                 print("Too many reconnection attempts. Quitting game")
                 return
 
-            print("Reconnecting...")
+            print(f"Reconnecting attempt {reconnection_attempts}/5...")
             time.sleep(5)
+            reconnection_attempts += 1
             # if old thread died, start up new thread after waiting (to not overload api)
             threading.Thread(target=stream_to_queue, daemon=True).start()
             # skip back to top of loop to wait for next real event
@@ -353,9 +346,6 @@ def game_loop(client, game_id, my_colour):
                     # run submit_my_move function
                     # waits for a valid move and then submits to Lichess via api
                     submit_my_move(client, game_id, move_handler, event_queue, _clock_thread, _stop_clock)
-
-                else:
-                    pass
 
                 # start or restart countdown timer for appropriate player
                 _clock_thread, _stop_clock = start_stop_timer(
