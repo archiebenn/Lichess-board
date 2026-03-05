@@ -268,11 +268,18 @@ def game_loop(client, game_id, my_colour):
 
     for event in iter(event_queue.get, None):
 
+        reconnection_attempts = 0
+
         # is stream drops, wait 5 seconds and try connecting again
         if event["type"] == "streamDead":
             # stops attempt to reconnect to a game which doesn't exist
             if game_over:
                 return
+            # set a cap to reconnection attempts before returning to main.py
+            if reconnection_attempts > 5:
+                print("Too many reconnection attempts. Quitting game")
+                return
+
             print("Reconnecting...")
             time.sleep(5)
             # if old thread died, start up new thread after waiting (to not overload api)
