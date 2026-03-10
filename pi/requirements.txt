@@ -2,3 +2,4 @@ uv
 berserk
 dotenv
 chess
+pyserial
