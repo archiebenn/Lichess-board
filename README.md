@@ -29,7 +29,7 @@ Using a simple breadboard and arduino circuit I wired up the hall effect sensor 
 A simulation on Wowki is available here (note a button is used in place of a hall effect sensor - pressing it mimics presence of a magnet): https://wokwi.com/projects/458314087442075649  
 
 Magnet not present:  
-![NeoPixel breadboard setup](images/hall_off.jpg)
-  
+<img src="images/hall_off.jpg" width="500">  
+
 Magnet present:  
-![Hall-effect sensor activated LED breadboard](images/hall_on.jpg)
+<img src="images/hall_on.jpg" width="500">
