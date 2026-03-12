@@ -28,5 +28,8 @@ Below are some main areas I tested out before trying to implement into the full 
 Using a simple breadboard and arduino circuit I wired up the hall effect sensor to activate an LED and print to the CLI when a magnet is detected by the hall effect sensor.  
 A simulation on Wowki is available here (note a button is used in place of a hall effect sensor - pressing it mimics presence of a magnet): https://wokwi.com/projects/458314087442075649  
 
-
-
+Magnet not present:  
+![NeoPixel breadboard setup](images/hall_off.jpg)
+  
+Magnet present:  
+![Hall-effect sensor activated LED breadboard](images/hall_on.jpg)

@@ -17,7 +17,7 @@ void setup() {
   pinMode(HALL_PIN, INPUT);
   //start serial comms at 9600 baud speed
   Serial.begin(9600);
-  // set brightness at 50/255
+  // set brightness at 10/255
   strip.setBrightness(10);
   // initialise led strip - begin/show = leds start off
   strip.begin();

@@ -12,7 +12,7 @@ file_to_LED = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 ###
 # led_instruction function
 ###
-def LED_instruction(origin, destination):
+def LED_instruction(origin, destination, is_check=False):
     """
     Sends LED command to Arduino over serial.
     Flashes the origin file then settles on destination file.
@@ -23,6 +23,13 @@ def LED_instruction(origin, destination):
     origin_file = file_to_LED[origin[0]]
     destination_file = file_to_LED[destination[0]]
 
+    # communicating to the arduino:
+    # first see if in check:
+    # if check, send additional red flash command after settling
+    if is_check:
+        time.sleep(0.3)
+        ser.write(b"CHECK\n")
+        
     # send flash command for origin, then settle command for destination
     # arduino will handle the timing of the flash
     ser.write(f"FLASH:{origin_file}\n".encode())

@@ -82,14 +82,14 @@ def is_my_turn(moves, my_colour):
         return not whites_turn_next
 
 
-def handle_turn(moves, my_colour, origin, destination, white_time, black_time):
+def handle_turn(moves, my_colour, origin, destination, white_time, black_time, is_check=False):
     """
     Handles whose turn it is, returns time remaining for current player for timer function, and will eventually handle LED updates
     """
     # my turn - light LEDs and set timer counting down
     if is_my_turn(moves, my_colour):
         # light up LEDs to show PREVIOUS (opponent's) move
-        LED_instruction(origin, destination)
+        LED_instruction(origin, destination, is_check=is_check)
 
         # set variables to pass to timer() for my turn time remaining
         time_ms = white_time if my_colour == "white" else black_time
@@ -326,9 +326,9 @@ def game_loop(client, game_id, my_colour):
                 white_time = event.get("wtime")
                 black_time = event.get("btime")
 
-                # HANDLE TURN, TIMERS AND LEDS
+                # HANDLE TURN, CHECK, TIMERS AND LEDS
                 time_ms, player_label = handle_turn(
-                    moves, my_colour, origin, destination, white_time, black_time
+                    moves, my_colour, origin, destination, white_time, black_time, board.is_check()
                 )
 
                 # check if my turn and listen to input moves (from hall sensor/CLI)
