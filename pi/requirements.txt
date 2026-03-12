@@ -2,4 +2,5 @@ uv
 berserk
 dotenv
 chess
+serial
 pyserial

@@ -18,7 +18,7 @@ void setup() {
   //start serial comms at 9600 baud speed
   Serial.begin(9600);
   // set brightness at 50/255
-  strip.setBrightness(50);
+  strip.setBrightness(10);
   // initialise led strip - begin/show = leds start off
   strip.begin();
   strip.show();
@@ -44,6 +44,6 @@ void loop() {
   }
 
   // wait 100ms before looping again
-  delay(200);
+  delay(100);
 
 }
