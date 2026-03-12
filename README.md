@@ -31,5 +31,5 @@ A simulation on Wowki is available here (note a button is used in place of a hal
 ## Photos 
 **Here are some photos from during the prototyping/build of the lichess board:**
 
-<img src="images/file_led.jpg" width="350">  
+<img src="images/file_led.jpg" width="500">  
 <em>12/3/26: Setting up the 8xLED strip to light up based on the opponent's move origin and destination file during a live game. Implemented as 3x orange flashes on origin file LED, and a constant green LED on the destination file LED as well as 3x all LED red flashes if the move is a check.</em>
