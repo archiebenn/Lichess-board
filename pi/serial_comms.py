@@ -1,5 +1,4 @@
 # serial_comms.py - for communications to the microcontroller/arduino from pi
-
 import serial 
 import time
 
@@ -9,9 +8,6 @@ ser = serial.Serial('/dev/ttyACM0', 9600, timeout=2)
 # map chess file letters to LED indices 0-7
 file_to_LED = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 
-###
-# led_instruction function
-###
 def LED_instruction(origin, destination, is_check=False):
     """
     Sends LED command to Arduino over serial.
@@ -24,14 +20,12 @@ def LED_instruction(origin, destination, is_check=False):
     destination_file = file_to_LED[destination[0]]
 
     # communicating to the arduino:
-    # first see if in check:
     # if check, send additional red flash command after settling
     if is_check:
         time.sleep(0.3)
         ser.write(b"CHECK\n")
         
     # send flash command for origin, then settle command for destination
-    # arduino will handle the timing of the flash
     ser.write(f"FLASH:{origin_file}\n".encode())
     time.sleep(0.5)
     ser.write(f"SETTLE:{destination_file}\n".encode())

@@ -1,8 +1,5 @@
 # in game functions
 
-###
-# IMPORTS
-###
 import chess
 from serial_comms import LED_instruction
 from move_input import MoveInputHandler
@@ -10,10 +7,6 @@ import threading
 import time
 import queue
 
-
-# to_from function
-###
-# take the move string, eg e2e4, and return the origin and destination square names (will change to coordinates later)
 def to_from(move_string):
     """
     returns the coordinates/squares of the move that was just made based on game state
@@ -31,9 +24,6 @@ def to_from(move_string):
     return origin, destination, promotion
 
 
-###
-# board state function - returns the current board state based on the move list
-###
 def set_board_state(moves):
     """
     Rebuild board state from full move list and returns None if illegal move
@@ -51,11 +41,6 @@ def set_board_state(moves):
     except chess.IllegalMoveError as e:
         print(f"Warning: illegal move in moves list, skipping: {e}")
         return None
-
-
-###
-# whose_turn function - returns which player's turn it is based on game state
-###
 
 
 def is_my_turn(moves, my_colour):
@@ -106,9 +91,6 @@ def handle_turn(moves, my_colour, origin, destination, white_time, black_time, i
     return time_ms, player_label
 
 
-###
-# timer function - returns players' remaining times at 1s intervals
-###
 def timer(time_ms, player_label, stop_event):
     """
     Converts ms to seconds and formats for display
@@ -135,9 +117,6 @@ def timer(time_ms, player_label, stop_event):
     print()
 
 
-###
-# start stop timer function - controls starting and stopping of timer thread based on game state and turn
-###
 def start_stop_timer(
     clock_thread, stop_clock, white_time, black_time, time_ms, player_label
 ):
@@ -166,11 +145,6 @@ def start_stop_timer(
     return clock_thread, stop_clock
 
 
-
-###
-# submit my move function - takes input (from cli or hall sensors) and submits to lichess if valid via api. 
-# also exits if new game state arrives
-###
 def submit_my_move(client, game_id, move_handler, event_queue, clock_thread, stop_clock):
     """
     Waits for a valid move from the player and submits it to Lichess.
@@ -205,7 +179,6 @@ def submit_my_move(client, game_id, move_handler, event_queue, clock_thread, sto
 # game loop function
 ###
 # set up start game function that streams game state for a given game id and client
-# any move made in the game will trigger an update to the game state, which is streamed in real time and can be used to update the board/cli/LEDs (eventually)
 def game_loop(client, game_id, my_colour):
     """
     Streams game state for a given game id and updates LEDs/CLI accordingly
@@ -216,13 +189,11 @@ def game_loop(client, game_id, my_colour):
     # timers - initialised as None until first move
     _clock_thread = None
     _stop_clock = None
-    # initialising game over
     game_over = False
 
     # move input handler - handles CLI input and eventually hall sensor input from arduino
     move_handler = MoveInputHandler()
 
-    # set statuses indicating if a game has already finished to avoid attempting to process moves during a finished game
     finished_status = {
         "resign",
         "mate",
@@ -250,14 +221,12 @@ def game_loop(client, game_id, my_colour):
         finally:
             event_queue.put({"type": "streamDead"})
 
-    # start stream thread
     threading.Thread(target=stream_to_queue, daemon=True).start()
 
     # main game loop - processes events from the queue one by one
     # iter(event_queue.get, None) blocks until an event arrives, then passes it through
     # stops if None is ever put in the queue (won't happen normally)
     # continues until game finishes, then returns to main.py for next game
-
     for event in iter(event_queue.get, None):
 
         reconnection_attempts = 1
@@ -302,16 +271,13 @@ def game_loop(client, game_id, my_colour):
             moves = event["moves"]
 
             if moves:
-                # get latest move string
                 latest_move = moves.split()[-1]
 
-                # set origin/destination:
                 origin, destination, promotion = to_from(latest_move)
 
                 # rebuild board from full move list to ensure correct state
                 board = set_board_state(moves)
 
-                # skip on error
                 if board is None:
                     continue
 

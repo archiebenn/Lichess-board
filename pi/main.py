@@ -1,17 +1,7 @@
 # main.py - top level logic for analogue lichess board
-
-###
-# IMPORTS
-###
 from lichess_api import client
 from game import game_loop
 
-
-###
-# MAIN LOGIC
-###
-
-# searching 
 print("Searching for incoming games...")
 
 # setup permanent loop to accept incoming events using the api
@@ -20,7 +10,7 @@ for event in client.board.stream_incoming_events():
 
     if event['type'] == 'gameStart':
 
-        # set game id and my colour from event and start game loop with start_game function
+        # set game id and my colour from event
         game_id = event['game']['id']
         my_colour = event['game']['color']
 
@@ -29,7 +19,6 @@ for event in client.board.stream_incoming_events():
         # move to main game loop function - LEDs, moves, timer etc.
         game_loop(client, game_id, my_colour)
 
-    # if game finishes print to cli and wait for next game 
     elif event['type'] == 'gameFinish':
 
         # get some info about the game from event to print to CLI:
@@ -39,7 +28,6 @@ for event in client.board.stream_incoming_events():
         last_move = game['lastMove']
         status = game['status']['name']
 
-        # print info about game outcome to CLI:
         print()
         if status == 'mate':
             print(f"Game over - {winner} wins by checkmate!")
@@ -53,5 +41,4 @@ for event in client.board.stream_incoming_events():
             print(f"Game over - {status}")
         print()
 
-        # back to permanent loop...
         print("Start another game to continue playing. Searching for incoming games...")
